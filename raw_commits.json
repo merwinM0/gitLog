@@ -1,5 +1,47 @@
 [
   {
+    "hash": "cd8be70eafb6c7ce1b53e083656b1794af0f5d3c",
+    "parent_hashes": [
+      "1c1184c8b0a1886e93911c5b63c834e492170736"
+    ],
+    "author": {
+      "name": "merwinM0",
+      "email": "18358511710@139.com",
+      "timestamp": 1767158912,
+      "offset_min": 480
+    },
+    "committer": {
+      "name": "merwinM0",
+      "email": "18358511710@139.com",
+      "timestamp": 1767158912,
+      "offset_min": 480
+    },
+    "summary": "feat(main): 删除分析部分",
+    "body": null,
+    "is_merge": false,
+    "signature_verified": false,
+    "total_insertions": 132,
+    "total_deletions": 138,
+    "files_changed_count": 3,
+    "changes": [
+      {
+        "path": "processed_summary.json",
+        "old_path": "processed_summary.json",
+        "status": "Deleted"
+      },
+      {
+        "path": "raw_commits.json",
+        "old_path": "raw_commits.json",
+        "status": "Modified"
+      },
+      {
+        "path": "src/main.rs",
+        "old_path": "src/main.rs",
+        "status": "Modified"
+      }
+    ]
+  },
+  {
     "hash": "1c1184c8b0a1886e93911c5b63c834e492170736",
     "parent_hashes": [
       "96cb0342f7b80ce2429286f58ad496feb8a90721"
