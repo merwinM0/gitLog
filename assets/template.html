@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh">
+	<head>
+		<meta charset="UTF-8">
+		<title>Git 代码库深度分析报告</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+		<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+		<style>
+			body, html { height: 100%; margin: 0; background: #020617; color: #f8fafc; overflow: hidden; font-family: sans-serif; }
+			.swiper { width: 100%; height: 100vh; }
+			.swiper-slide { display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+			.glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; }
+			.gradient-text { background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+			.chart-container { width: 100%; height: 450px; }
+		</style>
+	</head>
+	<body>
+
+		<div class="swiper">
+			<div class="swiper-wrapper">
+				<div class="swiper-slide">
+					<div class="text-center">
+						<h1 class="text-7xl font-black gradient-text mb-4" id="hero-title">CODE INSIGHT</h1>
+						<p class="text-gray-400 text-xl mb-12" id="hero-sub">项目基因组分析报告</p>
+						<div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-6xl px-4" id="hero-stats">
+							<div class="glass-card p-6">
+								<div class="text-sm text-blue-400">总提交次数</div>
+								<div class="text-4xl font-mono font-bold" id="m-commits">0</div>
+							</div>
+							<div class="glass-card p-6">
+								<div class="text-sm text-indigo-400">开发者人数</div>
+								<div class="text-4xl font-mono font-bold" id="m-authors">0</div>
+							</div>
+							<div class="glass-card p-6">
+								<div class="text-sm text-purple-400">核心系数 (Bus)</div>
+								<div class="text-4xl font-mono font-bold" id="m-bus">0</div>
+							</div>
+							<div class="glass-card p-6">
+								<div class="text-sm text-emerald-400">重构效率</div>
+								<div class="text-4xl font-mono font-bold" id="m-refactor">0%</div>
+							</div>
+						</div>
+						<p class="mt-12 text-gray-500 text-sm">生成于: <span id="m-gen-at"></span></p>
+					</div>
+				</div>
+
+				<div class="swiper-slide">
+					<div class="w-full max-w-6xl px-6">
+						<h2 class="text-3xl font-bold mb-8 flex items-center"><span class="w-2 h-8 bg-indigo-500 mr-4"></span>开发者贡献影响力</h2>
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+							<div id="author-radar" class="chart-container glass-card p-4"></div>
+							<div class="glass-card p-6 overflow-y-auto max-h-[450px]">
+								<table class="w-full text-left">
+									<thead class="text-gray-400 text-sm border-b border-gray-700">
+										<tr><th class="pb-2">姓名</th><th class="pb-2">提交</th><th class="pb-2">影响力</th><th class="pb-2">角色</th></tr>
+									</thead>
+									<tbody id="leaderboard-body"></tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="swiper-slide">
+					<div class="w-full max-w-6xl px-6">
+						<h2 class="text-3xl font-bold mb-8 flex items-center"><span class="w-2 h-8 bg-blue-500 mr-4"></span>研发节律分析 (24h)</h2>
+						<div class="glass-card p-8">
+							<div id="hour-chart" class="chart-container"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="swiper-slide">
+					<div class="w-full max-w-6xl px-6">
+						<h2 class="text-3xl font-bold mb-8 flex items-center"><span class="w-2 h-8 bg-red-500 mr-4"></span>高风险文件检测 (Hotspots)</h2>
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+							<div id="hotspot-chart" class="chart-container glass-card p-4"></div>
+							<div class="glass-card p-6">
+								<h3 class="text-blue-400 mb-4">代码分布与质量</h3>
+								<div class="space-y-6" id="quality-info">
+									<div>
+										<p class="text-gray-400 text-sm">单次提交平均影响文件数</p>
+										<p class="text-2xl font-bold" id="q-avg-files">0</p>
+									</div>
+									<div>
+										<p class="text-gray-400 text-sm">GPG 安全签名比例</p>
+										<div class="w-full bg-gray-800 h-2 rounded-full mt-2">
+											<div id="q-gpg-bar" class="bg-emerald-500 h-full rounded-full" style="width: 0%"></div>
+										</div>
+										<p class="text-right text-sm mt-1" id="q-gpg-text">0%</p>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="swiper-pagination"></div>
+		</div>
+
+		<script>
+			// --- 数据占位符：Rust 会替换这里 ---
+			const rawData = {REPO_DATA};
+			
+			// 初始化滚动框架
+			const swiper = new Swiper('.swiper', {
+				direction: 'vertical',
+				mousewheel: true,
+				parallax: true,
+				pagination: { el: '.swiper-pagination', clickable: true },
+				on: {
+					slideChangeTransitionEnd: function() { triggerAnimations(this.activeIndex); }
+				}
+				});
+				
+				function triggerAnimations(index) {
+					if(index === 0) renderHero();
+					if(index === 1) renderAuthors();
+					if(index === 2) renderTemporal();
+					if(index === 3) renderQuality();
+				}
+				
+				function renderHero() {
+					gsap.from("#hero-title", { y: 50, opacity: 0, duration: 1 });
+					const meta = rawData.project_metadata;
+					const workload = rawData.workload_stats;
+					document.getElementById('m-commits').innerText = meta.total_commits;
+					document.getElementById('m-authors').innerText = meta.total_authors;
+					document.getElementById('m-bus').innerText = meta.bus_factor;
+					document.getElementById('m-refactor').innerText = (workload.refactor_ratio * 100).toFixed(1) + "%";
+					document.getElementById('m-gen-at').innerText = meta.generated_at;
+				}
+				
+				function renderAuthors() {
+					// 排行榜表格
+					const list = document.getElementById('leaderboard-body');
+					list.innerHTML = rawData.author_leaderboard.map(a => `
+					<tr class="border-b border-gray-800/50 hover:bg-white/5 transition">
+					<td class="py-3 text-sm font-medium">${a.name}</td>
+					<td class="py-3 font-mono text-xs">${a.commit_count}</td>
+					<td class="py-3 font-mono text-xs text-blue-400">${a.impact_score}</td>
+					<td class="py-3"><span class="px-2 py-0.5 rounded text-[10px] bg-blue-500/20 text-blue-300">${a.role}</span></td>
+					</tr>
+					`).join('');
+					
+					// 雷达图
+					const chart = echarts.init(document.getElementById('author-radar'), 'dark');
+					const top5 = rawData.author_leaderboard.slice(0, 5);
+					chart.setOption({
+						backgroundColor: 'transparent',
+						radar: {
+							indicator: [
+							{ name: '影响力', max: 100 },
+							{ name: '提交数', max: Math.max(...top5.map(i=>i.commit_count)) },
+							{ name: '活跃天', max: Math.max(...top5.map(i=>i.active_days)) },
+							{ name: '新增行', max: Math.max(...top5.map(i=>i.insertions)) }
+							],
+							splitArea: { show: false }
+							},
+							series: [{
+								type: 'radar',
+								data: top5.map(a => ({
+									value: [a.impact_score, a.commit_count, a.active_days, a.insertions],
+									name: a.name,
+									areaStyle: { opacity: 0.1 }
+									}))
+									}]
+									});
+								}
+								
+								function renderTemporal() {
+									const chart = echarts.init(document.getElementById('hour-chart'), 'dark');
+									const hours = rawData.temporal_trends.hourly_distribution;
+									chart.setOption({
+										backgroundColor: 'transparent',
+										tooltip: { trigger: 'axis' },
+										xAxis: { type: 'category', data: Object.keys(hours) },
+										yAxis: { type: 'value' },
+										series: [{
+											data: Object.values(hours),
+											type: 'line',
+											smooth: true,
+											symbol: 'none',
+											areaStyle: {
+												color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+												{ offset: 0, color: 'rgba(56, 189, 248, 0.5)' },
+												{ offset: 1, color: 'rgba(56, 189, 248, 0)' }
+												])
+												},
+												lineStyle: { width: 3, color: '#38bdf8' }
+												}]
+												});
+											}
+											
+											function renderQuality() {
+												const chart = echarts.init(document.getElementById('hotspot-chart'), 'dark');
+												const hotspots = rawData.file_system_analysis.hotspots;
+												chart.setOption({
+													backgroundColor: 'transparent',
+													tooltip: {},
+													xAxis: { type: 'value', name: '修改次数' },
+													yAxis: { type: 'value', name: '独立作者数' },
+													series: [{
+														type: 'scatter',
+														symbolSize: val => val[0] / 2,
+														data: hotspots.map(h => [h.change_count, h.unique_authors, h.path]),
+														label: { show: false },
+														itemStyle: { color: '#f43f5e' }
+														}]
+														});
+														
+														const quality = rawData.engineering_quality;
+														document.getElementById('q-avg-files').innerText = quality.avg_files_per_commit.toFixed(2);
+														const gpg = quality.gpg_signed_percentage.toFixed(1);
+														document.getElementById('q-gpg-bar').style.width = gpg + "%";
+														document.getElementById('q-gpg-text').innerText = gpg + "%";
+													}
+													
+													// 启动
+													window.onload = () => triggerAnimations(0);
+		</script>
+	</body>
+</html>
