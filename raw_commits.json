@@ -1,0 +1,121 @@
+[
+  {
+    "hash": "96cb0342f7b80ce2429286f58ad496feb8a90721",
+    "parent_hashes": [
+      "eb94f14ea2665ef2949ebdbda82bb0fa434501af"
+    ],
+    "author": {
+      "name": "merwinM0",
+      "email": "18358511710@139.com",
+      "timestamp": 1767148592,
+      "offset_min": 480
+    },
+    "committer": {
+      "name": "merwinM0",
+      "email": "18358511710@139.com",
+      "timestamp": 1767148592,
+      "offset_min": 480
+    },
+    "summary": "feat(main): 获取更多数据",
+    "body": null,
+    "is_merge": false,
+    "signature_verified": false,
+    "total_insertions": 105,
+    "total_deletions": 66,
+    "files_changed_count": 1,
+    "changes": [
+      {
+        "path": "src/main.rs",
+        "old_path": "src/main.rs",
+        "status": "Modified"
+      }
+    ]
+  },
+  {
+    "hash": "eb94f14ea2665ef2949ebdbda82bb0fa434501af",
+    "parent_hashes": [
+      "ad406afd29bc07ab973346204928ce2fcac8996c"
+    ],
+    "author": {
+      "name": "merwinM0",
+      "email": "18358511710@139.com",
+      "timestamp": 1767145065,
+      "offset_min": 480
+    },
+    "committer": {
+      "name": "merwinM0",
+      "email": "18358511710@139.com",
+      "timestamp": 1767145065,
+      "offset_min": 480
+    },
+    "summary": "feat(main): 更多数据",
+    "body": null,
+    "is_merge": false,
+    "signature_verified": false,
+    "total_insertions": 136,
+    "total_deletions": 22,
+    "files_changed_count": 3,
+    "changes": [
+      {
+        "path": "Cargo.lock",
+        "old_path": "Cargo.lock",
+        "status": "Modified"
+      },
+      {
+        "path": "Cargo.toml",
+        "old_path": "Cargo.toml",
+        "status": "Modified"
+      },
+      {
+        "path": "src/main.rs",
+        "old_path": "src/main.rs",
+        "status": "Modified"
+      }
+    ]
+  },
+  {
+    "hash": "ad406afd29bc07ab973346204928ce2fcac8996c",
+    "parent_hashes": [],
+    "author": {
+      "name": "merwinM0",
+      "email": "18358511710@139.com",
+      "timestamp": 1767143856,
+      "offset_min": 480
+    },
+    "committer": {
+      "name": "merwinM0",
+      "email": "18358511710@139.com",
+      "timestamp": 1767143856,
+      "offset_min": 480
+    },
+    "summary": "feat(提交)",
+    "body": null,
+    "is_merge": false,
+    "signature_verified": false,
+    "total_insertions": 571,
+    "total_deletions": 0,
+    "files_changed_count": 4,
+    "changes": [
+      {
+        "path": ".gitignore",
+        "old_path": ".gitignore",
+        "status": "Added"
+      },
+      {
+        "path": "Cargo.lock",
+        "old_path": "Cargo.lock",
+        "status": "Added"
+      },
+      {
+        "path": "Cargo.toml",
+        "old_path": "Cargo.toml",
+        "status": "Added"
+      },
+      {
+        "path": "src/main.rs",
+        "old_path": "src/main.rs",
+        "status": "Added"
+      }
+    ]
+  }
+]
