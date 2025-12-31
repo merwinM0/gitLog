@@ -1,5 +1,52 @@
 [
   {
+    "hash": "fcdbf9b44df2eed721916b46ded1a45ed001b9a5",
+    "parent_hashes": [
+      "a4bc0877d75d007275e74f4029e8c29f46fafed7"
+    ],
+    "author": {
+      "name": "merwinM0",
+      "email": "18358511710@139.com",
+      "timestamp": 1767163691,
+      "offset_min": 480
+    },
+    "committer": {
+      "name": "merwinM0",
+      "email": "18358511710@139.com",
+      "timestamp": 1767163691,
+      "offset_min": 480
+    },
+    "summary": "feat(html): Swiss Brutalism（极简主义排版） 风格",
+    "body": null,
+    "is_merge": false,
+    "signature_verified": false,
+    "total_insertions": 312,
+    "total_deletions": 404,
+    "files_changed_count": 4,
+    "changes": [
+      {
+        "path": "assets/template.html",
+        "old_path": "assets/template.html",
+        "status": "Modified"
+      },
+      {
+        "path": "output/processed_summary.json",
+        "old_path": "output/processed_summary.json",
+        "status": "Modified"
+      },
+      {
+        "path": "output/raw_commits.json",
+        "old_path": "output/raw_commits.json",
+        "status": "Modified"
+      },
+      {
+        "path": "output/report.html",
+        "old_path": "output/report.html",
+        "status": "Modified"
+      }
+    ]
+  },
+  {
     "hash": "a4bc0877d75d007275e74f4029e8c29f46fafed7",
     "parent_hashes": [
       "02cbcdeb0793f562a42abc92c08718e823c94a44"

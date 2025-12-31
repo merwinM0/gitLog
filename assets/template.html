@@ -1,145 +1,193 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 	<head>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>PROJECT_AUDIT_STRICT_v2</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<title>项目研发进程总结</title>
 		<script src="https://cdn.tailwindcss.com"></script>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 		<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 		<style>
-			@import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&family=JetBrains+Mono:wght@500&display=swap');
-			body { background-color: #000; color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; }
-			.mono { font-family: 'JetBrains Mono', monospace; }
-			.huge-title { font-size: 18vw; line-height: 0.8; font-weight: 900; letter-spacing: -0.05em; }
-			.label-red { background: #FF3E3E; color: #000; padding: 2px 6px; font-size: 10px; font-weight: 900; }
-			.swiper-slide { height: 100vh; display: flex; flex-col; justify-content: center; overflow: hidden; }
-			.data-border { border-left: 8px solid #FF3E3E; padding-left: 1.5rem; }
-			.desc-text { color: #888; font-size: 0.85rem; line-height: 1.4; }
-			/* 强制隐藏图表坐标轴背景 */
-			.chart-container { height: 250px; width: 100%; }
+			@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;900&family=JetBrains+Mono:wght@300;800&display=swap');
+			:root { --bg: #ffffff; --text: #000000; --line: #eeeeee; }
+			body { background: var(--bg); color: var(--text); font-family: 'Inter', 'Noto Sans SC', sans-serif; margin: 0; overflow: hidden; }
+			.swiper { width: 100vw; height: 100vh; }
+			.slide-container { height: 100%; display: flex; flex-direction: column; padding: 12% 10% 8% 10%; border-right: 1px solid var(--line); }
+			.page-num { font-family: 'JetBrains Mono'; font-size: 10px; color: #bbb; margin-bottom: 10px; border-left: 2px solid #000; padding-left: 8px; }
+			.section-label { font-size: 10px; text-transform: uppercase; color: #888; letter-spacing: 2px; font-family: 'JetBrains Mono'; }
+			.huge-title { font-size: 3.2rem; font-weight: 900; line-height: 1.1; letter-spacing: -2px; margin: 10px 0; }
+			.title-small { font-size: 2.2rem !important; }
+			.divider { width: 100%; height: 1px; background: var(--line); margin: 20px 0; }
+			.data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 10px; }
+			.grid-item { border-top: 1px solid #000; padding-top: 8px; }
+			.grid-val { font-weight: 900; font-size: 16px; font-family: 'JetBrains Mono'; }
+			.grid-label { font-size: 9px; color: #999; margin-top: 2px; }
+			.desc-p { font-size: 12px; line-height: 1.8; color: #444; margin-top: auto; font-weight: 300; text-align: justify; }
+			.data-list { font-size: 10px; font-family: 'JetBrains Mono'; margin-top: 15px; border-top: 1px solid var(--line); }
+			.list-row { display: flex; justify-content: space-between; border-bottom: 1px solid var(--line); padding: 5px 0; }
 		</style>
 	</head>
 	<body>
-
 		<div class="swiper">
-			<div class="swiper-wrapper" id="content-mount">
-			</div>
+			<div class="swiper-wrapper" id="root"></div>
 		</div>
 
 		<script>
-			const repoData = {REPO_DATA};
+			// 注入 processed_summary.json 数据
+			const d = {REPO_DATA};
 			
-			// 模块定义：10 个分析维度
-			const modules = [
-			{
-				id: "01", title: "SYSTEM<br>IDENTITY", color: "bg-black",
-				main: repoData.project_metadata.total_commits, sub: "COMMIT_EVENTS",
-				desc: `审计起点：${repoData.project_metadata.generated_at}。当前系统快照包含自 ${new Date(repoData.project_metadata.time_range.start * 1000).toLocaleDateString()} 以来的完整变更轨迹。`
-				},
+			const formatTs = (ts) => {
+				if(!ts || ts === "0") return "未记录";
+				const date = new Date(parseInt(ts) * 1000);
+				return `${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`;
+				};
+				
+				const slides = [
 				{
-					id: "02", title: "ENGINEERING<br>MASS", color: "bg-[#111]",
-					main: repoData.workload_stats.net_lines, sub: "NET_CODE_LINES",
-					desc: `质量负载：${repoData.workload_stats.total_insertions} 注入 / ${repoData.workload_stats.total_deletions} 移除。系统净增量反映了开发初期的快速扩张特征。`
+					tag: "01 / 起源", title: "工程规模",
+					main: d.project_metadata.total_commits, unit: "累计提交次数",
+					grid: [
+					["开发者数", d.project_metadata.total_authors],
+					["核心人数", d.project_metadata.bus_factor],
+					["项目起点", formatTs(d.project_metadata.time_range.start)],
+					["本地时区", d.project_metadata.local_timezone]
+					],
+					desc: "项目自 " + formatTs(d.project_metadata.time_range.start) + " 开启首个逻辑字节。由 " + d.project_metadata.total_authors + " 位成员共同构建。"
 					},
 					{
-						id: "03", title: "REFACTOR<br>INDEX", color: "bg-[#FF3E3E]", textColor: "text-black",
-						main: (repoData.workload_stats.refactor_ratio * 100).toFixed(0) + "%", sub: "REFACTOR_WEIGHT",
-						desc: "逻辑演进：重构比率代表了对既有债务的清理频率。当前数值显示开发更倾向于功能堆叠而非结构优化。"
+						tag: "02 / 演进", title: "逻辑负载",
+						main: d.workload_stats.net_lines, unit: "现存有效行数",
+						grid: [
+						["累计新增", "+" + d.workload_stats.total_insertions],
+						["累计删除", "-" + d.workload_stats.total_deletions],
+						["重构系数", d.workload_stats.refactor_ratio],
+						["留存率", d.workload_stats.code_retention_rate]
+						],
+						desc: "代码仓库经历了 " + d.workload_stats.total_insertions + " 行的新增与 " + d.workload_stats.total_deletions + " 行的删除。"
 						},
 						{
-							id: "04", title: "CONTRIBUTOR<br>ROSTER", color: "bg-black",
-							main: repoData.author_leaderboard.length, sub: "ACTIVE_AUTHORS",
-							desc: `权限分布：核心开发者 ${repoData.author_leaderboard[0].name}。Bus Factor 值为 ${repoData.project_metadata.bus_factor}，系统高度依赖核心单点。`
+							tag: "03 / 贡献", title: "核心作者",
+							main: d.author_leaderboard[0].impact_score, unit: "最高影响力得分",
+							isList: true,
+							listData: d.author_leaderboard.map(a => [a.name, a.impact_score + " pts"]),
+							desc: "核心贡献者偏向 " + d.author_leaderboard[0].preferred_work_hours + " 作息模式，影响力分值达 " + d.author_leaderboard[0].impact_score + "。"
 							},
 							{
-								id: "05", title: "IMPACT<br>SCORE", color: "bg-white", textColor: "text-black",
-								main: repoData.author_leaderboard[0].impact_score, sub: "MAX_INFLUENCE",
-								desc: `个体审计：基于活跃天数 (${repoData.author_leaderboard[0].active_days}) 与提交频率生成的综合影响力指标。`
+								tag: "04 / 脉冲", title: "研发节律",
+								isChart: true, chartId: "pulseChart",
+								grid: [
+								["活跃周峰", "周三"],
+								["周活跃量", (d.temporal_trends.weekly_distribution.Wed || 0) + "c"],
+								["签名比例", d.engineering_quality.gpg_signed_percentage.toFixed(1) + "%"]
+								],
+								desc: "24 小时脉冲分布图揭示了团队的认知高点。目前系统安全签名比例为 " + d.engineering_quality.gpg_signed_percentage.toFixed(1) + "%。"
 								},
 								{
-									id: "06", title: "TEMPORAL<br>DENSITY", color: "bg-black",
-									chart: "hourChart", sub: "ACTIVITY_DISTRIBUTION",
-									desc: "时空规律：系统活动在 24 小时周期内的分布密度。用于识别研发节律与协作瓶颈。"
+									tag: "05 / 轨迹", title: "贡献足迹",
+									isChart: true, chartId: "heatChart",
+									desc: "每日提交频率的波动图谱。记录了项目从启动至今每一天的研发强度。"
 									},
 									{
-										id: "07", title: "VOLATILE<br>ENTITIES", color: "bg-[#111]",
-										list: repoData.file_system_analysis.hotspots.slice(0, 3), sub: "HOTSPOT_FILES",
-										desc: "热点分析：以下实体承受了最高频次的原子变更，是系统逻辑最不稳定的区域。"
+										tag: "06 / 热点", title: "震中观测",
+										isList: true,
+										listData: d.file_system_analysis.hotspots.map(h => [h.path.split('/').pop(), "风险:" + h.risk_level]),
+										desc: "内部变动最频繁的热点文件修订监控。当前震中风险等级评估为 " + d.file_system_analysis.hotspots[0].risk_level + "。"
 										},
 										{
-											id: "08", title: "INTERFACE<br>STABILITY", color: "bg-black",
-											main: repoData.engineering_quality.avg_files_per_commit.toFixed(1), sub: "FILE_COUPLING_AVG",
-											desc: "耦合度审计：平均每次事件影响的文件数。数值越高，模块间的逻辑粘连越严重。"
-											},
-											{
-												id: "09", title: "SECURITY<br>STATUS", color: "bg-[#FF3E3E]", textColor: "text-black",
-												main: repoData.engineering_quality.gpg_signed_percentage + "%", sub: "GPG_VERIFIED",
-												desc: "信誉验证：提交签名的覆盖率。当前数值指示了项目在分布式协作中的身份溯源安全性。"
-												},
-												{
-													id: "10", title: "AUDIT<br>COMPLETE", color: "bg-white", textColor: "text-black",
-													main: "2025", sub: "END_OF_REPORT",
-													desc: "审计终点：所有已知事件已完成向量化。报告生成于本地时区 " + repoData.project_metadata.local_timezone
-												}
-												];
-												
-												// 渲染函数
-												const mount = document.getElementById('content-mount');
-												mount.innerHTML = modules.map(m => `
-												<div class="swiper-slide p-8 ${m.color} ${m.textColor || 'text-white'} flex flex-col justify-center">
-												<div class="mb-4"><span class="label-red ${m.textColor === 'text-black' ? 'bg-black text-white' : ''}">AUDIT_PHASE_${m.id}</span></div>
-												<div class="huge-title mb-6">${m.title}</div>
-												
-												${m.main ? `<div class="data-border mb-6">
-												<div class="text-6xl font-black">${m.main}</div>
-												<div class="text-[10px] opacity-50 mono tracking-tighter">${m.sub}</div>
-												</div>` : ''}
-												
-												${m.chart ? `<div id="${m.chart}" class="chart-container mb-6"></div>` : ''}
-												
-												${m.list ? `<div class="space-y-4 mb-6">
-												${m.list.map(f => `
-												<div class="border-b border-current pb-1">
-												<div class="text-[10px] opacity-50 mono">${f.change_count} UPDATES</div>
-												<div class="text-xs font-bold truncate">${f.path}</div>
-												</div>
-												`).join('')}
-												</div>` : ''}
-												
-												<p class="desc-text ${m.textColor === 'text-black' ? 'text-black opacity-70' : ''}">${m.desc}</p>
-												</div>
-												`).join('');
-												
-												// 初始化交互
-												const swiper = new Swiper('.swiper', {
-													direction: 'vertical',
-													mousewheel: true,
-													speed: 700,
-													on: {
-														slideChangeTransitionEnd: function() {
-															if (modules[this.activeIndex].chart) renderTemporalChart();
-														}
+											tag: "07 / 总结", title: "记录·未完待续",
+											isSmallTitle: true,
+											main: d.project_metadata.total_commits + "c", unit: "全生命周期足迹",
+											grid: [
+											["总作者数", d.project_metadata.total_authors],
+											["报告状态", "已封存"]
+											],
+											desc: "截止 " + new Date(d.project_metadata.generated_at).toLocaleDateString() + "，" + d.project_metadata.total_commits + " 次提交记录了工程的进化轨迹。"
+										}
+										];
+										
+										const root = document.getElementById('root');
+										root.innerHTML = slides.map(s => `
+										<div class="swiper-slide">
+										<div class="slide-container">
+										<div class="page-num">${s.tag}</div>
+										<div class="section-label">DEVELOPMENT SUMMARY</div>
+										<h1 class="huge-title ${s.isSmallTitle ? 'title-small' : ''}">${s.title}</h1>
+										<div class="divider"></div>
+										${s.main ? `<div class="huge-title" style="font-size: 2.5rem; margin-top: 5px;">${s.main}</div><div class="section-label">${s.unit}</div>` : ''}
+										${s.isChart ? `<div id="${s.chartId}" style="height:200px; width:100%; margin-top:10px;"></div>` : ''}
+										<div class="data-grid">${s.grid ? s.grid.map(m => `<div class="grid-item"><div class="grid-val">${m[1]}</div><div class="grid-label">${m[0]}</div></div>`).join('') : ''}</div>
+										${s.isList ? `<div class="data-list">${s.listData.slice(0, 6).map(l => `<div class="list-row"><span>${l[0]}</span><span style="color:#888">${l[1]}</span></div>`).join('')}</div>` : ''}
+										<p class="desc-p">${s.desc}</p>
+										</div>
+										</div>
+										`).join('');
+										
+										const swiper = new Swiper('.swiper', {
+											direction: 'vertical',
+											mousewheel: true,
+											speed: 800,
+											on: {
+												init: () => { renderCharts(); },
+												slideChangeTransitionEnd: () => { renderCharts(); }
+											}
+											});
+											
+											function renderCharts() {
+												// 1. 研发脉冲图 (适配纯数字键)
+												const pulseEl = document.getElementById('pulseChart');
+												if(pulseEl) {
+													const myChart = echarts.init(pulseEl);
+													const rawData = d.temporal_trends.hourly_distribution;
+													const values = [];
+													for(let i=0; i<24; i++) {
+														const key = i.toString().padStart(2, '0');
+														values.push(rawData[key] || rawData[i] || 0); // 兼容 "09" 或 9
 													}
-													});
-													
-													function renderTemporalChart() {
-														const chart = echarts.init(document.getElementById('hourChart'), 'dark');
-														const hours = repoData.temporal_trends.hourly_distribution;
-														chart.setOption({
-															backgroundColor: 'transparent',
-															xAxis: { type: 'category', data: Object.keys(hours), axisLine: {show:false}, axisTick: {show:false} },
+													myChart.setOption({
+														grid: { top: 30, bottom: 30, left: 10, right: 10 },
+														xAxis: {
+															type: 'category',
+															data: Array.from({length: 24}, (_, i) => i + 'h'),
+															axisLabel: { interval: 3, color: '#bbb', fontSize: 9 }
+															},
 															yAxis: { show: false },
-															grid: { top: 10, bottom: 20, left: 0, right: 0 },
-															series: [{
-																data: Object.values(hours), type: 'bar',
-																itemStyle: { color: '#FF3E3E' }
-																}]
-																});
-															}
+															series: [{ data: values, type: 'bar', itemStyle: { color: '#000' } }]
+															});
+														}
+														
+														// 2. 贡献足迹图 (强化渲染逻辑)
+														const heatEl = document.getElementById('heatChart');
+														if(heatEl) {
+															const heatChart = echarts.init(heatEl);
+															const dailyData = d.temporal_trends.daily_commits;
+															const sortedEntries = Object.entries(dailyData).sort((a, b) => new Date(a[0]) - new Date(b[0]));
 															
-															window.onload = () => { if(modules[0].chart) renderTemporalChart(); };
+															// 如果数据点太少，补全前后日期以形成线段
+															let dates = sortedEntries.map(e => e[0]);
+															let counts = sortedEntries.map(e => e[1]);
+															
+															heatChart.setOption({
+																grid: { top: 40, bottom: 40, left: 20, right: 20 },
+																xAxis: {
+																	type: 'category',
+																	data: dates,
+																	show: true,
+																	axisLabel: { color: '#ccc', fontSize: 10, rotate: 0 }
+																	},
+																	yAxis: { show: false },
+																	series: [{
+																		data: counts,
+																		type: 'line',
+																		smooth: 0.3,
+																		symbol: 'circle',
+																		symbolSize: 8,
+																		lineStyle: { color: '#000', width: 2 },
+																		areaStyle: { color: 'rgba(0,0,0,0.05)' }
+																		}]
+																		});
+																	}
+																}
 		</script>
 	</body>
 </html>

@@ -1,31 +1,31 @@
 {
   "project_metadata": {
-    "generated_at": "2025-12-31T14:43:49.741716898+08:00",
+    "generated_at": "2025-12-31T16:13:38.445108382+08:00",
     "local_timezone": "+08:00",
-    "total_commits": 8,
+    "total_commits": 9,
     "total_authors": 1,
     "bus_factor": 1,
-    "last_commit_time": "2025-12-31T06:37:36+00:00",
+    "last_commit_time": "2025-12-31T06:48:11+00:00",
     "time_range": {
       "start": "1767143856",
-      "end": "1767163056"
+      "end": "1767163691"
     }
   },
   "workload_stats": {
-    "total_insertions": 3128,
-    "total_deletions": 962,
-    "net_lines": 2166,
-    "refactor_ratio": 0.31,
+    "total_insertions": 3440,
+    "total_deletions": 1366,
+    "net_lines": 2074,
+    "refactor_ratio": 0.4,
     "code_retention_rate": 0.0
   },
   "author_leaderboard": [
     {
       "name": "merwinM0",
       "email": "18358511710@139.com",
-      "commit_count": 8,
-      "insertions": 3128,
-      "deletions": 962,
-      "impact_score": 20.1,
+      "commit_count": 9,
+      "insertions": 3440,
+      "deletions": 1366,
+      "impact_score": 20.6,
       "active_days": 1,
       "avg_cycle_time_hours": 0.0,
       "preferred_work_hours": "Standard",
@@ -34,40 +34,70 @@
   ],
   "temporal_trends": {
     "daily_commits": {
-      "2025-12-31": 8
+      "2025-12-31": 9
     },
     "hourly_distribution": {
-      "00时": 0,
-      "01时": 0,
-      "02时": 0,
-      "03时": 0,
-      "04时": 0,
-      "05时": 0,
-      "06时": 0,
-      "07时": 0,
-      "08时": 0,
-      "09时": 2,
-      "10时": 1,
-      "11时": 0,
-      "12时": 0,
-      "13时": 3,
-      "14时": 2,
-      "15时": 0,
-      "16时": 0,
-      "17时": 0,
-      "18时": 0,
-      "19时": 0,
-      "20时": 0,
-      "21时": 0,
-      "22时": 0,
-      "23时": 0
+      "00": 0,
+      "01": 0,
+      "02": 0,
+      "03": 0,
+      "04": 0,
+      "05": 0,
+      "06": 0,
+      "07": 0,
+      "08": 0,
+      "09": 2,
+      "10": 1,
+      "11": 0,
+      "12": 0,
+      "13": 3,
+      "14": 3,
+      "15": 0,
+      "16": 0,
+      "17": 0,
+      "18": 0,
+      "19": 0,
+      "20": 0,
+      "21": 0,
+      "22": 0,
+      "23": 0
     },
     "weekly_distribution": {
-      "Wed": 8
+      "Wed": 9
     }
   },
   "file_system_analysis": {
     "hotspots": [
+      {
+        "path": ".gitignore",
+        "change_count": 1,
+        "unique_authors": 1,
+        "risk_level": "Low"
+      },
+      {
+        "path": "output/processed_summary.json",
+        "change_count": 2,
+        "unique_authors": 1,
+        "risk_level": "Low"
+      },
+      {
+        "path": "output/report.html",
+        "change_count": 2,
+        "unique_authors": 1,
+        "risk_level": "Low"
+      },
+      {
+        "path": "summary.md",
+        "change_count": 1,
+        "unique_authors": 1,
+        "risk_level": "Low"
+      },
+      {
+        "path": "output/raw_commits.json",
+        "change_count": 2,
+        "unique_authors": 1,
+        "risk_level": "Low"
+      },
       {
         "path": "src/main.rs",
         "change_count": 8,
@@ -75,14 +105,14 @@
         "risk_level": "Low"
       },
       {
-        "path": "output/processed_summary.json",
-        "change_count": 1,
+        "path": "Cargo.lock",
+        "change_count": 3,
         "unique_authors": 1,
         "risk_level": "Low"
       },
       {
-        "path": "raw_commits.json",
-        "change_count": 4,
+        "path": "assets/template.html",
+        "change_count": 2,
         "unique_authors": 1,
         "risk_level": "Low"
       },
@@ -93,38 +123,8 @@
         "risk_level": "Low"
       },
       {
-        "path": "output/report.html",
-        "change_count": 1,
-        "unique_authors": 1,
-        "risk_level": "Low"
-      },
-      {
-        "path": "assets/template.html",
-        "change_count": 1,
-        "unique_authors": 1,
-        "risk_level": "Low"
-      },
-      {
-        "path": "output/raw_commits.json",
-        "change_count": 1,
-        "unique_authors": 1,
-        "risk_level": "Low"
-      },
-      {
-        "path": ".gitignore",
-        "change_count": 1,
-        "unique_authors": 1,
-        "risk_level": "Low"
-      },
-      {
-        "path": "Cargo.toml",
-        "change_count": 3,
-        "unique_authors": 1,
-        "risk_level": "Low"
-      },
-      {
-        "path": "Cargo.lock",
-        "change_count": 3,
+        "path": "raw_commits.json",
+        "change_count": 4,
         "unique_authors": 1,
         "risk_level": "Low"
       }
@@ -134,9 +134,9 @@
   },
   "engineering_quality": {
     "commit_type_distribution": {
-      "unknown": 8
+      "unknown": 9
     },
-    "avg_files_per_commit": 3.5,
+    "avg_files_per_commit": 3.5555555555555554,
     "gpg_signed_percentage": 0.0,
     "potential_secrets_found": 0
   }

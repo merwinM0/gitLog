@@ -1,12 +1,16 @@
-use chrono::{DateTime, Datelike, FixedOffset, Local, TimeZone, Utc, Timelike};
+use chrono::{DateTime, Datelike, FixedOffset, Local, TimeZone, Timelike, Utc};
 use git2::{Commit, DiffOptions, Repository, Sort};
 use serde::Serialize;
-use std::collections::{HashMap, HashSet, BTreeMap};
+use std::collections::{BTreeMap, HashMap, HashSet};
 use std::error::Error;
 use std::fs::{self, File};
 use std::path::Path;
 
-// --- 1. 数据结构定义 ---
+// --- 1. 静态资源嵌入 ---
+// 在编译阶段将 template.html 内容读入内存，不再依赖外部路径
+const HTML_TEMPLATE: &str = include_str!("../assets/template.html");
+
+// --- 2. 数据结构定义 ---
 
 #[derive(Serialize, Debug, Clone)]
 struct UserInfo {
@@ -39,7 +43,15 @@ struct CommitReport {
     changes: Vec<FileChangeDetail>,
 }
 
-// --- 2. 分析报告结构 (严格匹配 JSON 蓝图) ---
+#[derive(Serialize, Debug)]
+struct FinalAnalysisReport {
+    project_metadata: ProjectMetadata,
+    workload_stats: WorkloadStats,
+    author_leaderboard: Vec<AuthorLeaderboardEntry>,
+    temporal_trends: TemporalTrends,
+    file_system_analysis: FileSystemAnalysis,
+    engineering_quality: EngineeringQuality,
+}
 
 #[derive(Serialize, Debug)]
 struct ProjectMetadata {
@@ -111,36 +123,22 @@ struct EngineeringQuality {
     potential_secrets_found: usize,
 }
 
-#[derive(Serialize, Debug)]
-struct FinalAnalysisReport {
-    project_metadata: ProjectMetadata,
-    workload_stats: WorkloadStats,
-    author_leaderboard: Vec<AuthorLeaderboardEntry>,
-    temporal_trends: TemporalTrends,
-    file_system_analysis: FileSystemAnalysis,
-    engineering_quality: EngineeringQuality,
-}
-
 // --- 3. 主程序逻辑 ---
 
 fn main() -> Result<(), Box<dyn Error>> {
-    // 确保输出和资源目录存在
     let output_dir = Path::new("output");
-    if !output_dir.exists() { fs::create_dir_all(output_dir)?; }
-    
-    let assets_dir = Path::new("assets");
-    if !assets_dir.exists() {
-        println!("⚠️ 请注意：请手动创建 assets/template.html 文件以生成可视化报告。");
+    if !output_dir.exists() {
+        fs::create_dir_all(output_dir)?;
     }
 
-    // A. 初始化仓库
+    // A. 初始化仓库 (当前目录)
     let repo = Repository::open(".")?;
     let mut revwalk = repo.revwalk()?;
     revwalk.push_head()?;
     revwalk.set_sorting(Sort::TIME)?;
 
     let mut reports = Vec::new();
-    println!("🚀 正在从 Git 历史采集数据...");
+    println!("🚀 正在分析 Git 历史数据...");
 
     for id_result in revwalk {
         let id = id_result?;
@@ -150,50 +148,43 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    // B. 保存原始数据
-    let raw_file = File::create(output_dir.join("raw_commits.json"))?;
-    serde_json::to_writer_pretty(raw_file, &reports)?;
-
-    // C. 执行深度聚合分析
-    println!("📊 正在进行多维度分析...");
+    // B. 执行聚合分析
     let final_report = perform_final_analysis(&reports);
 
-    // D. 保存分析 JSON
-    let summary_file = File::create(output_dir.join("processed_summary.json"))?;
-    serde_json::to_writer_pretty(summary_file, &final_report)?;
+    // C. 生成 HTML 报告
+    generate_html_report(&final_report)?;
 
-    // E. 自动生成可视化报告
-    if Path::new("assets/template.html").exists() {
-        generate_html_report(&final_report)?;
-    } else {
-        println!("💡 提示：未找到 assets/template.html，跳过可视化报告生成。");
-    }
+    println!("✅ 处理完成！报告已生成至: output/report.html");
+    
+    // D. 自动在浏览器打开报告
+    open_report("output/report.html");
 
-    println!("✅ 处理完成！请查看 output/ 文件夹。");
     Ok(())
 }
 
-// --- 4. 核心功能函数 ---
+// --- 4. 核心功能实现 ---
 
 fn perform_final_analysis(reports: &[CommitReport]) -> FinalAnalysisReport {
     let mut author_map: HashMap<String, (UserInfo, Vec<&CommitReport>)> = HashMap::new();
     let mut daily_commits = HashMap::new();
     let mut hourly_dist = BTreeMap::new();
-    for i in 0..24 { hourly_dist.insert(format!("{:02}时", i), 0); }
-    
+    for i in 0..24 {
+        hourly_dist.insert(format!("{:02}", i), 0);
+    }
+
     let mut weekly_dist = HashMap::new();
     let mut file_map: HashMap<String, HashSet<String>> = HashMap::new();
     let mut file_change_counts: HashMap<String, usize> = HashMap::new();
     let mut type_dist = HashMap::new();
-    
+
     let (mut total_ins, mut total_del, mut gpg_count) = (0, 0, 0);
 
     for r in reports {
         let offset = FixedOffset::east_opt(r.author.offset_min * 60).unwrap_or(FixedOffset::east_opt(0).unwrap());
         let dt = Utc.timestamp_opt(r.author.timestamp, 0).unwrap().with_timezone(&offset);
-        
+
         *daily_commits.entry(dt.format("%Y-%m-%d").to_string()).or_insert(0) += 1;
-        *hourly_dist.entry(format!("{:02}时", dt.hour())).or_insert(0) += 1;
+        *hourly_dist.entry(format!("{:02}", dt.hour())).or_insert(0) += 1;
         *weekly_dist.entry(dt.format("%a").to_string()).or_insert(0) += 1;
 
         if !r.is_merge {
@@ -231,7 +222,7 @@ fn perform_final_analysis(reports: &[CommitReport]) -> FinalAnalysisReport {
     }).collect();
     leaderboard.sort_by(|a, b| b.impact_score.partial_cmp(&a.impact_score).unwrap());
 
-    // 自动计算 Bus Factor (贡献覆盖 50% 影响力的人数)
+    // 自动计算 Bus Factor
     let total_impact: f64 = leaderboard.iter().map(|a| a.impact_score).sum();
     let (mut acc_impact, mut bus_factor) = (0.0, 0);
     for a in &leaderboard {
@@ -256,7 +247,8 @@ fn perform_final_analysis(reports: &[CommitReport]) -> FinalAnalysisReport {
             },
         },
         workload_stats: WorkloadStats {
-            total_insertions: total_ins, total_deletions: total_del,
+            total_insertions: total_ins,
+            total_deletions: total_del,
             net_lines: (total_ins as i64 - total_del as i64),
             refactor_ratio: if total_ins > 0 { (total_del as f64 / total_ins as f64 * 100.0).round() / 100.0 } else { 0.0 },
             code_retention_rate: 0.0,
@@ -268,7 +260,8 @@ fn perform_final_analysis(reports: &[CommitReport]) -> FinalAnalysisReport {
                 let authors = file_map.get(&path).map(|s| s.len()).unwrap_or(0);
                 HotspotEntry { path, change_count: count, unique_authors: authors, risk_level: if authors > 2 { "High" } else { "Low" }.to_string() }
             }).collect(),
-            language_distribution: HashMap::new(), file_coupling: Vec::new(),
+            language_distribution: HashMap::new(),
+            file_coupling: Vec::new(),
         },
         engineering_quality: EngineeringQuality {
             commit_type_distribution: type_dist,
@@ -280,12 +273,10 @@ fn perform_final_analysis(reports: &[CommitReport]) -> FinalAnalysisReport {
 }
 
 fn generate_html_report(report: &FinalAnalysisReport) -> Result<(), Box<dyn Error>> {
-    let mut template = fs::read_to_string("assets/template.html")?;
     let json_data = serde_json::to_string(report)?;
-    // 替换模板中的占位符
-    template = template.replace("{REPO_DATA}", &json_data);
-    fs::write("output/report.html", template)?;
-    println!("🎨 可视化报告已生成：output/report.html");
+    // 使用预先嵌入的 HTML 模板字符串
+    let output_html = HTML_TEMPLATE.replace("{REPO_DATA}", &json_data);
+    fs::write("output/report.html", output_html)?;
     Ok(())
 }
 
@@ -306,7 +297,7 @@ fn analyze_commit(repo: &Repository, commit: &Commit) -> Result<CommitReport, Bo
     };
     let mut parent_hashes = Vec::new();
     for i in 0..commit.parent_count() { parent_hashes.push(commit.parent_id(i)?.to_string()); }
-    
+
     let current_tree = commit.tree()?;
     let parent_tree = if commit.parent_count() > 0 { Some(commit.parent(0)?.tree()?) } else { None };
     let mut opts = DiffOptions::new();
@@ -314,16 +305,13 @@ fn analyze_commit(repo: &Repository, commit: &Commit) -> Result<CommitReport, Bo
     let mut find_opts = git2::DiffFindOptions::new();
     find_opts.renames(true);
     diff.find_similar(Some(&mut find_opts))?;
-    
+
     let stats = diff.stats()?;
     let mut changes = Vec::new();
     diff.foreach(&mut |delta, _| {
         let old_path = delta.old_file().path().map(|p| p.to_string_lossy().into_owned());
         let new_path = delta.new_file().path().map(|p| p.to_string_lossy().into_owned());
-        changes.push(FileChangeDetail {
-            path: new_path.unwrap_or_else(|| old_path.clone().unwrap_or_default()),
-            old_path, status: format!("{:?}", delta.status()),
-        });
+        changes.push(FileChangeDetail { path: new_path.unwrap_or_else(|| old_path.clone().unwrap_or_default()), old_path, status: format!("{:?}", delta.status()) });
         true
     }, None, None, None)?;
 
@@ -333,7 +321,19 @@ fn analyze_commit(repo: &Repository, commit: &Commit) -> Result<CommitReport, Bo
         body: commit.body().map(|s| s.to_string()),
         is_merge: commit.parent_count() > 1,
         signature_verified: repo.extract_signature(&commit.id(), None).is_ok(),
-        total_insertions: stats.insertions(), total_deletions: stats.deletions(),
-        files_changed_count: stats.files_changed(), changes,
+        total_insertions: stats.insertions(),
+        total_deletions: stats.deletions(),
+        files_changed_count: stats.files_changed(),
+        changes,
     })
+}
+
+fn open_report(path: &str) {
+    let _ = if cfg!(target_os = "windows") {
+        std::process::Command::new("cmd").args(["/C", "start", path]).spawn()
+    } else if cfg!(target_os = "macos") {
+        std::process::Command::new("open").arg(path).spawn()
+    } else {
+        std::process::Command::new("xdg-open").arg(path).spawn()
+    };
 }
