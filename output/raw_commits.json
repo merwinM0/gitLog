@@ -1,5 +1,57 @@
 [
   {
+    "hash": "a4bc0877d75d007275e74f4029e8c29f46fafed7",
+    "parent_hashes": [
+      "02cbcdeb0793f562a42abc92c08718e823c94a44"
+    ],
+    "author": {
+      "name": "merwinM0",
+      "email": "18358511710@139.com",
+      "timestamp": 1767163056,
+      "offset_min": 480
+    },
+    "committer": {
+      "name": "merwinM0",
+      "email": "18358511710@139.com",
+      "timestamp": 1767163056,
+      "offset_min": 480
+    },
+    "summary": "feat(main&html): 前端界面渲染",
+    "body": null,
+    "is_merge": false,
+    "signature_verified": false,
+    "total_insertions": 994,
+    "total_deletions": 200,
+    "files_changed_count": 5,
+    "changes": [
+      {
+        "path": "assets/template.html",
+        "old_path": "assets/template.html",
+        "status": "Added"
+      },
+      {
+        "path": "output/processed_summary.json",
+        "old_path": "output/processed_summary.json",
+        "status": "Added"
+      },
+      {
+        "path": "output/raw_commits.json",
+        "old_path": "output/raw_commits.json",
+        "status": "Added"
+      },
+      {
+        "path": "output/report.html",
+        "old_path": "output/report.html",
+        "status": "Added"
+      },
+      {
+        "path": "src/main.rs",
+        "old_path": "src/main.rs",
+        "status": "Modified"
+      }
+    ]
+  },
+  {
     "hash": "02cbcdeb0793f562a42abc92c08718e823c94a44",
     "parent_hashes": [
       "7598d5102fe02133411ff95eb4892a1972f72063"

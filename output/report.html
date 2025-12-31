@@ -2,225 +2,144 @@
 <html lang="zh">
 	<head>
 		<meta charset="UTF-8">
-		<title>Git 代码库深度分析报告</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>PROJECT_AUDIT_REPORT</title>
 		<script src="https://cdn.tailwindcss.com"></script>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 		<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 		<style>
-			body, html { height: 100%; margin: 0; background: #020617; color: #f8fafc; overflow: hidden; font-family: sans-serif; }
+			@import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&display=swap');
+			body { background-color: #0F0F0F; color: #FFFFFF; font-family: 'Inter', sans-serif; }
 			.swiper { width: 100%; height: 100vh; }
-			.swiper-slide { display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
-			.glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1.5rem; }
-			.gradient-text { background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-			.chart-container { width: 100%; height: 450px; }
+			.huge-num { font-size: 15vw; line-height: 0.8; letter-spacing: -0.05em; font-weight: 900; }
+			.label-rect { background: #FF3E3E; color: #000; padding: 2px 8px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+			.border-heavy { border-left: 12px solid #FF3E3E; padding-left: 20px; }
+			.chart-box { height: 30vh; width: 100%; }
+			/* 隐藏滚动条 */
+			::-webkit-scrollbar { display: none; }
 		</style>
 	</head>
 	<body>
 
 		<div class="swiper">
 			<div class="swiper-wrapper">
-				<div class="swiper-slide">
-					<div class="text-center">
-						<h1 class="text-7xl font-black gradient-text mb-4" id="hero-title">CODE INSIGHT</h1>
-						<p class="text-gray-400 text-xl mb-12" id="hero-sub">项目基因组分析报告</p>
-						<div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-6xl px-4" id="hero-stats">
-							<div class="glass-card p-6">
-								<div class="text-sm text-blue-400">总提交次数</div>
-								<div class="text-4xl font-mono font-bold" id="m-commits">0</div>
-							</div>
-							<div class="glass-card p-6">
-								<div class="text-sm text-indigo-400">开发者人数</div>
-								<div class="text-4xl font-mono font-bold" id="m-authors">0</div>
-							</div>
-							<div class="glass-card p-6">
-								<div class="text-sm text-purple-400">核心系数 (Bus)</div>
-								<div class="text-4xl font-mono font-bold" id="m-bus">0</div>
-							</div>
-							<div class="glass-card p-6">
-								<div class="text-sm text-emerald-400">重构效率</div>
-								<div class="text-4xl font-mono font-bold" id="m-refactor">0%</div>
-							</div>
-						</div>
-						<p class="mt-12 text-gray-500 text-sm">生成于: <span id="m-gen-at"></span></p>
+
+				<div class="swiper-slide p-10 flex flex-col justify-center">
+					<div class="mb-4"><span class="label-rect">Audit_Phase_01</span></div>
+					<div class="huge-num mb-6">DATA<br>VOLUME</div>
+					<div class="border-heavy">
+						<div class="text-4xl font-black">${repoData.project_metadata.total_commits}</div>
+						<div class="text-gray-500 text-sm uppercase">Total Commit Events</div>
+					</div>
+					<div class="mt-12 space-y-4">
+						<p class="text-gray-400 text-sm leading-tight">
+							在当前统计周期内，系统记录了 <span class="text-white">${repoData.project_metadata.total_commits}</span>
+							次有效变更。
+							代码库规模呈现线性增长，Bus Factor 指数维持在 <span class="text-white">${repoData.project_metadata.bus_factor}</span>，
+							显示出高度集中的开发路径。
+						</p>
 					</div>
 				</div>
 
-				<div class="swiper-slide">
-					<div class="w-full max-w-6xl px-6">
-						<h2 class="text-3xl font-bold mb-8 flex items-center"><span class="w-2 h-8 bg-indigo-500 mr-4"></span>开发者贡献影响力</h2>
-						<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-							<div id="author-radar" class="chart-container glass-card p-4"></div>
-							<div class="glass-card p-6 overflow-y-auto max-h-[450px]">
-								<table class="w-full text-left">
-									<thead class="text-gray-400 text-sm border-b border-gray-700">
-										<tr><th class="pb-2">姓名</th><th class="pb-2">提交</th><th class="pb-2">影响力</th><th class="pb-2">角色</th></tr>
-									</thead>
-									<tbody id="leaderboard-body"></tbody>
-								</table>
-							</div>
+				<div class="swiper-slide p-10 flex flex-col justify-center bg-[#1A1A1A]">
+					<div class="mb-4"><span class="label-rect">Audit_Phase_02</span></div>
+					<div class="huge-num mb-6 text-[#FF3E3E]">+${repoData.workload_stats.net_lines}</div>
+					<div class="text-2xl font-black mb-8">NET_INCREMENT</div>
+					<div class="grid grid-cols-2 gap-4">
+						<div>
+							<div class="text-xs text-gray-500 uppercase">Insertions</div>
+							<div class="text-xl font-bold text-white">${repoData.workload_stats.total_insertions}</div>
+						</div>
+						<div>
+							<div class="text-xs text-gray-500 uppercase">Deletions</div>
+							<div class="text-xl font-bold text-white">${repoData.workload_stats.total_deletions}</div>
 						</div>
 					</div>
+					<p class="mt-10 text-gray-400 text-sm">
+						重构率统计值为 <span class="text-white">${(repoData.workload_stats.refactor_ratio * 100).toFixed(0)}%</span>。
+						这表明开发活动主要集中于功能的原始构建，而非对既有逻辑的优化或清理。
+					</p>
 				</div>
 
-				<div class="swiper-slide">
-					<div class="w-full max-w-6xl px-6">
-						<h2 class="text-3xl font-bold mb-8 flex items-center"><span class="w-2 h-8 bg-blue-500 mr-4"></span>研发节律分析 (24h)</h2>
-						<div class="glass-card p-8">
-							<div id="hour-chart" class="chart-container"></div>
-						</div>
+				<div class="swiper-slide p-10 flex flex-col justify-center">
+					<div class="mb-4"><span class="label-rect">Audit_Phase_03</span></div>
+					<div class="text-5xl font-black mb-10">TEMPORAL<br>DENSITY</div>
+					<div id="hourChart" class="chart-box mb-8"></div>
+					<div class="border-heavy">
+						<div class="text-sm text-gray-400 uppercase">Peak Efficiency Hour</div>
+						<div class="text-2xl font-bold" id="peakHourText">--:--</div>
 					</div>
+					<p class="mt-6 text-gray-500 text-xs italic">
+						* 行为模式分析：系统在 13-14 时区间检测到峰值热度。
+					</p>
 				</div>
 
-				<div class="swiper-slide">
-					<div class="w-full max-w-6xl px-6">
-						<h2 class="text-3xl font-bold mb-8 flex items-center"><span class="w-2 h-8 bg-red-500 mr-4"></span>高风险文件检测 (Hotspots)</h2>
-						<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-							<div id="hotspot-chart" class="chart-container glass-card p-4"></div>
-							<div class="glass-card p-6">
-								<h3 class="text-blue-400 mb-4">代码分布与质量</h3>
-								<div class="space-y-6" id="quality-info">
-									<div>
-										<p class="text-gray-400 text-sm">单次提交平均影响文件数</p>
-										<p class="text-2xl font-bold" id="q-avg-files">0</p>
-									</div>
-									<div>
-										<p class="text-gray-400 text-sm">GPG 安全签名比例</p>
-										<div class="w-full bg-gray-800 h-2 rounded-full mt-2">
-											<div id="q-gpg-bar" class="bg-emerald-500 h-full rounded-full" style="width: 0%"></div>
-										</div>
-										<p class="text-right text-sm mt-1" id="q-gpg-text">0%</p>
-									</div>
-								</div>
-							</div>
+				<div class="swiper-slide p-10 flex flex-col justify-start pt-20 bg-white text-black">
+					<div class="mb-4"><span class="label-rect" style="background: #000; color: #fff;">Audit_Phase_04</span></div>
+					<div class="text-5xl font-black mb-8 leading-none">VULNERABLE<br>FILES</div>
+					<div class="space-y-6">
+						${repoData.file_system_analysis.hotspots.slice(0, 5).map(h => `
+						<div class="border-b-2 border-black pb-2">
+							<div class="text-[10px] uppercase font-bold text-gray-500">${h.risk_level} Risk</div>
+							<div class="text-sm font-black truncate">${h.path}</div>
+							<div class="text-xs font-bold text-[#FF3E3E]">${h.change_count} UPDATES</div>
 						</div>
+						`).join('')}
 					</div>
+					<p class="mt-8 text-xs font-bold uppercase tracking-widest">
+						核心组件 <span class="underline">${repoData.file_system_analysis.hotspots[0].path}</span>
+						具有最高变更频率，
+						属于系统逻辑耦合中心。
+					</p>
 				</div>
 			</div>
 			<div class="swiper-pagination"></div>
 		</div>
 
 		<script>
-			// --- 数据占位符：Rust 会替换这里 ---
-			const rawData = {"project_metadata":{"generated_at":"2025-12-31T14:28:29.265965445+08:00","local_timezone":"+08:00","total_commits":7,"total_authors":1,"bus_factor":1,"last_commit_time":"2025-12-31T06:04:27+00:00","time_range":{"start":"1767143856","end":"1767161067"}},"workload_stats":{"total_insertions":2134,"total_deletions":762,"net_lines":1372,"refactor_ratio":0.36,"code_retention_rate":0.0},"author_leaderboard":[{"name":"merwinM0","email":"18358511710@139.com","commit_count":7,"insertions":2134,"deletions":762,"impact_score":18.9,"active_days":1,"avg_cycle_time_hours":0.0,"preferred_work_hours":"Standard","role":"Maintainer"}],"temporal_trends":{"daily_commits":{"2025-12-31":7},"hourly_distribution":{"00时":0,"01时":0,"02时":0,"03时":0,"04时":0,"05时":0,"06时":0,"07时":0,"08时":0,"09时":2,"10时":1,"11时":0,"12时":0,"13时":3,"14时":1,"15时":0,"16时":0,"17时":0,"18时":0,"19时":0,"20时":0,"21时":0,"22时":0,"23时":0},"weekly_distribution":{"Wed":7}},"file_system_analysis":{"hotspots":[{"path":".gitignore","change_count":1,"unique_authors":1,"risk_level":"Low"},{"path":"summary.md","change_count":1,"unique_authors":1,"risk_level":"Low"},{"path":"Cargo.lock","change_count":3,"unique_authors":1,"risk_level":"Low"},{"path":"Cargo.toml","change_count":3,"unique_authors":1,"risk_level":"Low"},{"path":"processed_summary.json","change_count":4,"unique_authors":1,"risk_level":"Low"},{"path":"src/main.rs","change_count":7,"unique_authors":1,"risk_level":"Low"},{"path":"raw_commits.json","change_count":4,"unique_authors":1,"risk_level":"Low"}],"language_distribution":{},"file_coupling":[]},"engineering_quality":{"commit_type_distribution":{"unknown":7},"avg_files_per_commit":3.2857142857142856,"gpg_signed_percentage":0.0,"potential_secrets_found":0}};
+			const repoData = {"project_metadata":{"generated_at":"2025-12-31T14:43:49.741716898+08:00","local_timezone":"+08:00","total_commits":8,"total_authors":1,"bus_factor":1,"last_commit_time":"2025-12-31T06:37:36+00:00","time_range":{"start":"1767143856","end":"1767163056"}},"workload_stats":{"total_insertions":3128,"total_deletions":962,"net_lines":2166,"refactor_ratio":0.31,"code_retention_rate":0.0},"author_leaderboard":[{"name":"merwinM0","email":"18358511710@139.com","commit_count":8,"insertions":3128,"deletions":962,"impact_score":20.1,"active_days":1,"avg_cycle_time_hours":0.0,"preferred_work_hours":"Standard","role":"Maintainer"}],"temporal_trends":{"daily_commits":{"2025-12-31":8},"hourly_distribution":{"00时":0,"01时":0,"02时":0,"03时":0,"04时":0,"05时":0,"06时":0,"07时":0,"08时":0,"09时":2,"10时":1,"11时":0,"12时":0,"13时":3,"14时":2,"15时":0,"16时":0,"17时":0,"18时":0,"19时":0,"20时":0,"21时":0,"22时":0,"23时":0},"weekly_distribution":{"Wed":8}},"file_system_analysis":{"hotspots":[{"path":"src/main.rs","change_count":8,"unique_authors":1,"risk_level":"Low"},{"path":"output/processed_summary.json","change_count":1,"unique_authors":1,"risk_level":"Low"},{"path":"raw_commits.json","change_count":4,"unique_authors":1,"risk_level":"Low"},{"path":"processed_summary.json","change_count":4,"unique_authors":1,"risk_level":"Low"},{"path":"output/report.html","change_count":1,"unique_authors":1,"risk_level":"Low"},{"path":"assets/template.html","change_count":1,"unique_authors":1,"risk_level":"Low"},{"path":"output/raw_commits.json","change_count":1,"unique_authors":1,"risk_level":"Low"},{"path":".gitignore","change_count":1,"unique_authors":1,"risk_level":"Low"},{"path":"Cargo.toml","change_count":3,"unique_authors":1,"risk_level":"Low"},{"path":"Cargo.lock","change_count":3,"unique_authors":1,"risk_level":"Low"}],"language_distribution":{},"file_coupling":[]},"engineering_quality":{"commit_type_distribution":{"unknown":8},"avg_files_per_commit":3.5,"gpg_signed_percentage":0.0,"potential_secrets_found":0}};
 			
-			// 初始化滚动框架
+			// 初始化 Swiper
 			const swiper = new Swiper('.swiper', {
 				direction: 'vertical',
 				mousewheel: true,
-				parallax: true,
 				pagination: { el: '.swiper-pagination', clickable: true },
 				on: {
-					slideChangeTransitionEnd: function() { triggerAnimations(this.activeIndex); }
+					slideChange: function() {
+						if(this.activeIndex === 2) renderChart();
+					}
 				}
 				});
 				
-				function triggerAnimations(index) {
-					if(index === 0) renderHero();
-					if(index === 1) renderAuthors();
-					if(index === 2) renderTemporal();
-					if(index === 3) renderQuality();
-				}
-				
-				function renderHero() {
-					gsap.from("#hero-title", { y: 50, opacity: 0, duration: 1 });
-					const meta = rawData.project_metadata;
-					const workload = rawData.workload_stats;
-					document.getElementById('m-commits').innerText = meta.total_commits;
-					document.getElementById('m-authors').innerText = meta.total_authors;
-					document.getElementById('m-bus').innerText = meta.bus_factor;
-					document.getElementById('m-refactor').innerText = (workload.refactor_ratio * 100).toFixed(1) + "%";
-					document.getElementById('m-gen-at').innerText = meta.generated_at;
-				}
-				
-				function renderAuthors() {
-					// 排行榜表格
-					const list = document.getElementById('leaderboard-body');
-					list.innerHTML = rawData.author_leaderboard.map(a => `
-					<tr class="border-b border-gray-800/50 hover:bg-white/5 transition">
-					<td class="py-3 text-sm font-medium">${a.name}</td>
-					<td class="py-3 font-mono text-xs">${a.commit_count}</td>
-					<td class="py-3 font-mono text-xs text-blue-400">${a.impact_score}</td>
-					<td class="py-3"><span class="px-2 py-0.5 rounded text-[10px] bg-blue-500/20 text-blue-300">${a.role}</span></td>
-					</tr>
-					`).join('');
+				function renderChart() {
+					const chart = echarts.init(document.getElementById('hourChart'), 'dark');
+					const hours = repoData.temporal_trends.hourly_distribution;
+					const keys = Object.keys(hours);
+					const values = Object.values(hours);
 					
-					// 雷达图
-					const chart = echarts.init(document.getElementById('author-radar'), 'dark');
-					const top5 = rawData.author_leaderboard.slice(0, 5);
+					const peak = keys.reduce((a, b) => hours[a] > hours[b] ? a : b);
+					document.getElementById('peakHourText').innerText = peak;
+					
 					chart.setOption({
 						backgroundColor: 'transparent',
-						radar: {
-							indicator: [
-							{ name: '影响力', max: 100 },
-							{ name: '提交数', max: Math.max(...top5.map(i=>i.commit_count)) },
-							{ name: '活跃天', max: Math.max(...top5.map(i=>i.active_days)) },
-							{ name: '新增行', max: Math.max(...top5.map(i=>i.insertions)) }
-							],
-							splitArea: { show: false }
+						xAxis: {
+							type: 'category', data: keys,
+							axisLine: {show: false}, axisTick: {show: false},
+							axisLabel: { color: '#555', fontSize: 10 }
 							},
+							yAxis: { show: false },
+							grid: { top: 0, bottom: 20, left: 0, right: 0 },
 							series: [{
-								type: 'radar',
-								data: top5.map(a => ({
-									value: [a.impact_score, a.commit_count, a.active_days, a.insertions],
-									name: a.name,
-									areaStyle: { opacity: 0.1 }
-									}))
-									}]
-									});
-								}
-								
-								function renderTemporal() {
-									const chart = echarts.init(document.getElementById('hour-chart'), 'dark');
-									const hours = rawData.temporal_trends.hourly_distribution;
-									chart.setOption({
-										backgroundColor: 'transparent',
-										tooltip: { trigger: 'axis' },
-										xAxis: { type: 'category', data: Object.keys(hours) },
-										yAxis: { type: 'value' },
-										series: [{
-											data: Object.values(hours),
-											type: 'line',
-											smooth: true,
-											symbol: 'none',
-											areaStyle: {
-												color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-												{ offset: 0, color: 'rgba(56, 189, 248, 0.5)' },
-												{ offset: 1, color: 'rgba(56, 189, 248, 0)' }
-												])
-												},
-												lineStyle: { width: 3, color: '#38bdf8' }
-												}]
-												});
-											}
-											
-											function renderQuality() {
-												const chart = echarts.init(document.getElementById('hotspot-chart'), 'dark');
-												const hotspots = rawData.file_system_analysis.hotspots;
-												chart.setOption({
-													backgroundColor: 'transparent',
-													tooltip: {},
-													xAxis: { type: 'value', name: '修改次数' },
-													yAxis: { type: 'value', name: '独立作者数' },
-													series: [{
-														type: 'scatter',
-														symbolSize: val => val[0] / 2,
-														data: hotspots.map(h => [h.change_count, h.unique_authors, h.path]),
-														label: { show: false },
-														itemStyle: { color: '#f43f5e' }
-														}]
-														});
-														
-														const quality = rawData.engineering_quality;
-														document.getElementById('q-avg-files').innerText = quality.avg_files_per_commit.toFixed(2);
-														const gpg = quality.gpg_signed_percentage.toFixed(1);
-														document.getElementById('q-gpg-bar').style.width = gpg + "%";
-														document.getElementById('q-gpg-text').innerText = gpg + "%";
-													}
-													
-													// 启动
-													window.onload = () => triggerAnimations(0);
+								data: values, type: 'bar',
+								itemStyle: { color: '#FF3E3E' },
+								barWidth: '60%'
+								}]
+								});
+							}
+							
+							// 初始化第一页
+							window.onload = () => { if(swiper.activeIndex === 2) renderChart(); };
 		</script>
 	</body>
 </html>
