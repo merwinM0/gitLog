@@ -133,9 +133,7 @@ gitLog --output-dir ./reports    # Custom output directory / 自定义输出目�
 gitLog --since 2024-01-01        # Analyze commits since date / 分析指定日期后的提交
 gitLog --max-commits 1000        # Limit number of commits / 限制提交数量
 ```
-
 ### Output Files / 输出文件
-
 After execution, the following files are generated in the `output/` directory:
 
 - **`report.html`**: Interactive HTML report (opens automatically in browser)
