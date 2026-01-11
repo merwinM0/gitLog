@@ -15,7 +15,6 @@ A powerful Rust-based Git repository analysis tool that generates interactive vi
 - [Development / 开发](#development--开发)
 - [Contributing / 贡献指南](#contributing--贡献指南)
 - [Screenshots / 截图](#screenshots--截图)
-
 ## Overview / 概述
 
 **GitLog** is a command-line tool that analyzes Git repository history and generates comprehensive visual reports. It provides insights into development patterns, contributor activity, code quality, and project evolution through an interactive HTML interface with modern design.
