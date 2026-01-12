@@ -22,7 +22,6 @@ A powerful Rust-based Git repository analysis tool that generates interactive vi
 **GitLog** 是一个命令行工具，用于分析Git仓库历史并生成全面的可视化报告。它通过具有现代设计的交互式HTML界面，提供开发模式、贡献者活动、代码质量和项目演进的深入洞察。
 
 ## Features / 特性
-
 ### 🔍 Analysis Capabilities / 分析能力
 - **Commit Analysis**: Detailed examination of each commit including author info, changes, and statistics
   **提交分析**：详细检查每个提交，包括作者信息、更改和统计
