@@ -125,6 +125,7 @@ gitLog /path/to/repository
 
 Currently the tool accepts no arguments and analyzes the current directory's Git repository. Future versions may include:
 
+
 ```bash
 # Planned options / 计划中的选项
 gitLog --output-dir ./reports    # Custom output directory / 自定义输出目录
