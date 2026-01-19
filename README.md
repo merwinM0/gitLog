@@ -101,7 +101,6 @@ git clone <repository-url>
 cd gitLog
 cargo run --release
 ```
-
 The tool will analyze the current repository and open the report in your browser automatically.
 工具将分析当前仓库并自动在浏览器中打开报告。
 
