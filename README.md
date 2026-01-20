@@ -75,7 +75,6 @@ cargo build --release
 # The executable will be at / 可执行文件位置:
 # target/release/gitLog
 ```
-
 ### Installation Methods / 安装方法
 
 ```bash
