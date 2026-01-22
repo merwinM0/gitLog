@@ -117,7 +117,6 @@ gitLog
 # Or specify a path / 或指定路径
 gitLog /path/to/repository
 ```
-
 ### Command-line Options / 命令行选项
 
 Currently the tool accepts no arguments and analyzes the current directory's Git repository. Future versions may include:
