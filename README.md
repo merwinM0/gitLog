@@ -32,7 +32,6 @@ A powerful Rust-based Git repository analysis tool that generates interactive vi
   **文件系统分析**：热点检测、风险评估和文件耦合分析
 - **Engineering Quality**: Commit type distribution, GPG signing rates, and quality metrics
   **工程质量**：提交类型分布、GPG签名率和质量指标
-
 ### 📊 Reporting Features / 报告特性
 - **Interactive HTML Report**: Swiss Brutalism design with smooth vertical scrolling
   **交互式HTML报告**：瑞士粗野主义设计，支持平滑垂直滚动
