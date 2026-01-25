@@ -73,7 +73,6 @@ cargo build --release
 # target/release/gitLog
 ```
 ### Installation Methods / 安装方法
-
 ```bash
 # Method 1: Install globally via Cargo / 方法1: 通过Cargo全局安装
 cargo install --path .
