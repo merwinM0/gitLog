@@ -83,7 +83,6 @@ cargo run --release
 # Method 3: Use pre-built binary / 方法3: 使用预构建二进制文件
 ./target/release/gitLog
 ```
-
 ## Usage / 使用
 
 ### Quick Start / 快速开始
