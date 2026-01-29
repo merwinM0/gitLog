@@ -39,7 +39,6 @@ A powerful Rust-based Git repository analysis tool that generates interactive vi
   **响应式设计**：支持移动设备，采用现代排版
 - **Multi-language Support**: Chinese localization with proper date formatting
   **多语言支持**：中文本地化，支持正确的日期格式
-
 ### ⚡ Performance / 性能
 - **Compile-time Resource Embedding**: HTML template embedded at compile time
   **编译时资源嵌入**：HTML模板在编译时嵌入
