@@ -48,7 +48,6 @@ A powerful Rust-based Git repository analysis tool that generates interactive vi
   **并行处理**：优化的数据聚合和分析
 
 ## Installation / 安装
-
 ### Prerequisites / 先决条件
 - **Rust** (version 1.70+): Install from [rustup.rs](https://rustup.rs/)
   **Rust** (版本1.70+): 从 [rustup.rs](https://rustup.rs/) 安装
