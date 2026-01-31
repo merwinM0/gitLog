@@ -3,7 +3,6 @@
 A powerful Rust-based Git repository analysis tool that generates interactive visual reports with Swiss Brutalism design aesthetics.
 
 一个基于Rust的Git仓库分析工具，生成具有瑞士粗野主义设计美学的交互式可视化报告。
-
 ## 📋 Table of Contents / 目录
 - [Overview / 概述](#overview--概述)
 - [Features / 特性](#features--特性)
