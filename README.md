@@ -1,5 +1,4 @@
 # GitLog Analysis Tool
-
 A powerful Rust-based Git repository analysis tool that generates interactive visual reports with Swiss Brutalism design aesthetics.
 一个基于Rust的Git仓库分析工具，生成具有瑞士粗野主义设计美学的交互式可视化报告。
 ## 📋 Table of Contents / 目录
