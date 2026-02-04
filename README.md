@@ -52,7 +52,6 @@ A powerful Rust-based Git repository analysis tool that generates interactive vi
   **Git**: Git命令行工具
 - **Cargo**: Rust package manager (included with Rust)
   **Cargo**: Rust包管理器（随Rust一起安装）
-
 ### Building from Source / 从源码构建
 ```bash
 # Clone the repository / 克隆仓库
