@@ -68,7 +68,6 @@ cargo build --release
 ```bash
 # Method 1: Install globally via Cargo / 方法1: 通过Cargo全局安装
 cargo install --path .
-
 # Method 2: Run directly / 方法2: 直接运行
 cargo run --release
 
