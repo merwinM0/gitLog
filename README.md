@@ -74,7 +74,6 @@ cargo run --release
 ./target/release/gitLog
 ```
 ## Usage / 使用
-
 ### Quick Start / 快速开始
 
 If you just want to try the tool quickly / 如果你想快速试用工具:
