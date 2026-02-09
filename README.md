@@ -122,7 +122,6 @@ After execution, the following files are generated in the `output/` directory:
   **`processed_summary.json`**: JSON格式的聚合分析数据
 - **`raw_commits.json`**: Raw commit data with detailed change information
   **`raw_commits.json`**: 包含详细更改信息的原始提交数据
-
 ### Report Navigation / 报告导航
 
 The interactive report features 7 slides that can be navigated using:
