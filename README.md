@@ -57,7 +57,6 @@ A powerful Rust-based Git repository analysis tool that generates interactive vi
 # Clone the repository / 克隆仓库
 git clone <repository-url>
 cd gitLog
-
 # Build the project / 构建项目
 cargo build --release
 
